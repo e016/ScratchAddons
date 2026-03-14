@@ -109,6 +109,7 @@ let fuse;
         addonSettings: {},
         addonToEnable: null,
         showPopupModal: false,
+        showFeedbackBar: false,
         isIframe,
         addonGroups: addonGroups.filter((g) => (isIframe ? g.iframeShow : g.fullscreenShow)),
         categories,
@@ -339,6 +340,7 @@ let fuse;
           "animationend",
           () => {
             this.showPopupModal = false;
+            this.showFeedbackBar = false;
           },
           { once: true }
         );

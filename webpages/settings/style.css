@@ -74,7 +74,7 @@ h1 {
   padding-top: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--gray-text) transparent;
-  height: 100vh;
+  height: calc(100vh - 54px - 31px - 20px) !important;
 }
 
 .addons-container .placeholder {
@@ -437,4 +437,58 @@ button.setting-input.color.open {
   align-items: center;
   justify-content: center;
   user-select: none;
+}
+.hide-bottom-bar {
+  display: none;
+}
+#bottom-bar {
+  position: absolute;
+  z-index: 10000;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--content-background);
+  border-top: 1px solid var(--content-border);
+  font-size: 14px;
+  text-align: center;
+  box-shadow: var(--content-shadow);
+  line-height: 15px;
+  min-height: 31px;
+  align-items: stretch;
+  justify-content: center;
+  user-select: none;
+  display: flex;
+}
+#bottom-bar > * {
+  margin: 8px 0;
+}
+#bottom-bar > a {
+  font-weight: var(--brand-orange-min-font-weight);
+}
+#bottom-bar > a:hover {
+  color: var(--brand-orange);
+  text-decoration: none;
+}
+#bottom-bar .separator {
+  margin: auto 8px;
+  height: 15px;
+  padding: 0;
+  border-left: 1px solid var(--content-separator);
+}
+.popout {
+  height: 12px;
+  vertical-align: -1px;
+  margin-inline-start: 5px;
+  opacity: 0.6;
+  filter: var(--content-icon-filter);
+}
+[dir="rtl"] .popout {
+  transform: scaleX(-1);
+}
+.send-feedback:hover .popout {
+  opacity: 1;
+  filter: none;
+}
+.send-feedback {
+  color: inherit;
 }
