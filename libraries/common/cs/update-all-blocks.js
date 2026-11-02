@@ -16,7 +16,7 @@ export async function updateAllBlocks(
   // Calling Events.disable() will:
   // - prevent changes to the workspace from being added to the undo stack;
   // - prevent project change events from being triggered.
-  // From scratch-blocks source code: "Every call to this function MUST also call enable."
+  // From Blockly source code: "Every call to this function MUST also call enable."
   blockly.Events.disable();
 
   if (workspace) {
@@ -28,11 +28,11 @@ export async function updateAllBlocks(
       }
     }
     if (updateMainWorkspace) {
-      const xml = blockly.Xml.workspaceToDom(workspace);
-      if (xml.querySelector("variables")) {
-        xml.querySelector("variables").remove();
-      }
-      // Add all variables, including unused ones, to the XML document
+      // blockly.Xml.workspaceToDom() doesn't serialize everything Scratch needs.
+      // Use the methods provided by scratch-vm instead.
+      const vm = tab.traps.vm;
+      const xml = blockly.utils.xml.createElement("xml");
+
       const variables = blockly.utils.xml.createElement("variables");
       const globalVariables = Object.values(tab.traps.vm.runtime.getTargetForStage().variables);
       const localVariables = tab.traps.vm.editingTarget.isStage
@@ -45,38 +45,38 @@ export async function updateAllBlocks(
         variables.appendChild(blockly.utils.xml.textToDom(variable.toXML(true)));
       }
       xml.appendChild(variables);
+
+      const workspaceComments = Object.values(vm.editingTarget.comments).filter((comment) => !comment.blockId);
+      for (const comment of workspaceComments) {
+        xml.appendChild(blockly.utils.xml.textToDom(comment.toXML()));
+      }
+      const scripts = vm.editingTarget.blocks.getScripts();
+      for (const script of scripts) {
+        xml.appendChild(
+          blockly.utils.xml.textToDom(vm.editingTarget.blocks.blockToXML(script, vm.editingTarget.comments))
+        );
+      }
+
       blockly.clearWorkspaceAndLoadFromXml(xml, workspace);
     }
     if (toolbox && flyout && (updateFlyout || updateCategories)) {
       if (updateFlyout) {
-        if (blockly.registry) {
-          // new Blockly: can't use clearWorkspaceAndLoadFromXml() here because it breaks the flyout
-          // Events have to be reenabled here because flyout.show() creates new blocks with new IDs
-          // and the VM needs to be notified about that.
-          blockly.Events.enable();
-          flyout.setRecyclingEnabled(false);
-          flyout.show(toolbox.getInitialFlyoutContents());
-          flyout.setRecyclingEnabled(true);
-          blockly.Events.disable();
-        } else {
-          const flyoutWorkspace = flyout.getWorkspace();
-          blockly.Xml.clearWorkspaceAndLoadFromXml(blockly.Xml.workspaceToDom(flyoutWorkspace), flyoutWorkspace);
-        }
+        // Can't use clearWorkspaceAndLoadFromXml() because it breaks the flyout.
+        // Events have to be reenabled here because flyout.show() creates new blocks with new IDs
+        // and the VM needs to be notified about that.
+        blockly.Events.enable();
+        flyout.setRecyclingEnabled(false);
+        flyout.show(toolbox.getInitialFlyoutContents());
+        flyout.setRecyclingEnabled(true);
+        blockly.Events.disable();
       }
       if (updateCategories) {
         const selectedItemId = toolbox.getSelectedItem().id_;
-        if (blockly.registry) {
-          // new Blockly
-          toolbox.render(workspace.options.languageTree);
-          toolbox.selectItem_(null, toolbox.contents.get(selectedItemId));
-        } else {
-          toolbox.categoryMenu_.populate(workspace.options.languageTree);
-          toolbox.selectCategoryById(selectedItemId, false);
-        }
+        toolbox.render(workspace.options.languageTree);
+        toolbox.selectItem_(null, toolbox.contents.get(selectedItemId));
       }
       toolbox.refreshSelection();
     }
-    workspace.toolboxRefreshEnabled_ = true;
   }
 
   blockly.Events.enable();

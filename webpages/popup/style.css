@@ -1,6 +1,10 @@
-body {
+html {
   width: var(--width, 400px);
   height: var(--height, 600px);
+}
+body {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -104,9 +108,8 @@ button {
   content: "";
   display: block;
   position: absolute;
-  left: 10px;
-  right: 10px;
   bottom: 0;
+  inset-inline: 10px;
   height: 4px;
   background-color: var(--orange);
   border-radius: 4px 4px 0 0;
@@ -161,4 +164,33 @@ iframe {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   user-select: text;
+}
+
+@media (forced-colors: active) {
+  #version {
+    opacity: 1;
+  }
+
+  .header-button {
+    background-color: ButtonFace;
+    outline: 1px solid ButtonBorder;
+    outline-offset: -1px;
+  }
+  .header-button:focus {
+    outline: revert;
+  }
+
+  .popup-name {
+    background-color: ButtonFace;
+    color: ButtonText;
+    transition: none;
+  }
+  .popup-name.sel {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: preserve-parent-color;
+  }
+  .popup-name.sel::before {
+    background-color: HighlightText;
+  }
 }

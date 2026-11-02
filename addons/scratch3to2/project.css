@@ -274,9 +274,6 @@
 :root:not(.sa-editor) [class*="stage-header_stage-button_"]:active {
   background-color: transparent;
 }
-:root:not(.sa-editor) [class*="stage-header_stage-button-icon_"] {
-  filter: none;
-}
 :root:not(.sa-editor) [class*="stage-header_stage-button-icon_"]:not(.sa-gamepad-container *) {
   display: none;
 }
@@ -561,6 +558,7 @@
 .subactions .action-buttons .action-button.studio-button::before,
 .subactions .action-buttons .action-button.copy-link-button::before,
 .subactions .action-buttons .action-button.report-button::before,
+.sa-remixtree-button::before,
 #sa-download-button::before {
   display: none;
 }
